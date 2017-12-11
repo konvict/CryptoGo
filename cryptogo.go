@@ -1,15 +1,16 @@
+//fork from https://github.com/isfonzar/CryptoGo
 package main
 
 import (
 	"bytes"
 	"fmt"
-	"github.com/isfonzar/filecrypt"
-	"golang.org/x/crypto/ssh/terminal"
 	"os"
+
+	"github.com/konvict/filecrypt"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
-
 	// If not enough args, return help text
 	if len(os.Args) < 2 {
 		printHelp()
@@ -19,14 +20,14 @@ func main() {
 	function := os.Args[1]
 
 	switch function {
-	case "help":
+	case "h":
 		printHelp()
-	case "encrypt":
+	case "e":
 		encryptHandle()
-	case "decrypt":
+	case "d":
 		decryptHandle()
 	default:
-		fmt.Println("Run CryptoGo encrypt to encrypt a file, and CryptoGo decrypt to decrypt a file.")
+		fmt.Println("加密或解密一个文件。")
 		os.Exit(1)
 	}
 
@@ -34,48 +35,50 @@ func main() {
 
 func printHelp() {
 	fmt.Println("CryptoGo")
-	fmt.Println("Simple file encrypter for your day-to-day needs.")
+	fmt.Println("MIT Open Source License")
+	fmt.Println("原作者isfonzar，https://github.com/isfonzar/")
+	fmt.Println("一个简单的问加密软件。")
 	fmt.Println("")
-	fmt.Println("Usage:")
+	fmt.Println("用法:")
 	fmt.Println("")
-	fmt.Println("\tCryptoGo encrypt /path/to/your/file")
+	fmt.Println("\tCryptoGo e 文件")
 	fmt.Println("")
-	fmt.Println("Commands:")
+	fmt.Println("命令:")
 	fmt.Println("")
-	fmt.Println("\t encrypt\tEncrypts a file given a password")
-	fmt.Println("\t decrypt\tTries to decrypt a file using a password")
-	fmt.Println("\t help\t\tDisplays help text")
+	fmt.Println("\t e\t\t使用密码加密一个文件")
+	fmt.Println("\t d\t\t使用密码解密一个文件")
+	fmt.Println("\t h\t\t显示帮助信息")
 	fmt.Println("")
 }
 
 func encryptHandle() {
 
 	if len(os.Args) < 3 {
-		println("Missing the path to the file. For more information run CryptoGo help")
+		println("缺少必要参数。需指定要加密的文件。")
 		os.Exit(0)
 	}
 
 	file := os.Args[2]
 
 	if !validateFile(file) {
-		panic("File not found")
+		panic("文件未找到！")
 	}
 
 	password := getPassword()
 
-	fmt.Println("\nEncrypting...")
+	fmt.Println("加密中...")
 	filecrypt.Encrypt(file, password)
-	fmt.Println("\nFile successfully protected")
+	fmt.Println("\n文件已成功加密")
 
 }
 
 func getPassword() []byte {
-	fmt.Print("Enter password: ")
+	fmt.Print("请输入加密密码: ")
 	password, _ := terminal.ReadPassword(0)
-	fmt.Print("\nConfirm password: ")
+	fmt.Print("\n请在输入一次: ")
 	password2, _ := terminal.ReadPassword(0)
 	if !validatePassword(password, password2) {
-		fmt.Print("\nPasswords do not match. Please try again.\n")
+		fmt.Print("\n密码不匹配，请在输入一次。\n")
 		return getPassword()
 	}
 	return password
@@ -84,22 +87,22 @@ func getPassword() []byte {
 func decryptHandle() {
 
 	if len(os.Args) < 3 {
-		println("Missing the path to the file. For more information run CryptoGo help")
+		println("缺少必要参数。需指定要加密的文件。")
 		os.Exit(0)
 	}
 
 	file := os.Args[2]
 
 	if !validateFile(file) {
-		panic("File not found")
+		panic("文件未找到")
 	}
 
-	fmt.Print("Enter password: ")
+	fmt.Print("请输入密码: ")
 	password, _ := terminal.ReadPassword(0)
 
-	fmt.Println("\nDecrypting...")
+	fmt.Println("\n解密中...")
 	filecrypt.Decrypt(file, password)
-	fmt.Println("\nFile successfully decrypted.")
+	fmt.Println("\n文件已成功解密。")
 
 }
 
